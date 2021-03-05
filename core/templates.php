@@ -1,5 +1,107 @@
 <?php
 
+$indexapi = <<<'EOT'
+<?php
+// PARAMETER
+
+// Include config file
+require_once "config.php";
+
+//Get current URL and parameters for correct pagination
+$protocol = $_SERVER['SERVER_PROTOCOL'];
+$domain     = $_SERVER['HTTP_HOST'];
+$script   = $_SERVER['SCRIPT_NAME'];
+$parameters   = $_SERVER['QUERY_STRING'];
+$protocol=strpos(strtolower($_SERVER['SERVER_PROTOCOL']),'https')
+            === FALSE ? 'http' : 'https';
+$currenturl = $protocol . '://' . $domain. $script . '?' . $parameters;
+
+
+//Pagination
+if (isset($_GET['pageno'])) {
+    $pageno = $_GET['pageno'];
+} else {
+    $pageno = 1;
+}
+//$no_of_records_per_page is set on the index page. Default is 10.
+$offset = ($pageno-1) * $no_of_records_per_page;
+
+$total_pages_sql = "SELECT COUNT(*) FROM {TABLE_NAME}";
+$result = mysqli_query($link,$total_pages_sql);
+$total_rows = mysqli_fetch_array($result)[0];
+$total_pages = ceil($total_rows / $no_of_records_per_page);
+
+//Column sorting on column name
+$orderBy = array('{COLUMNS}'); 
+$order = '{COLUMN_ID}';
+if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
+        $order = $_GET['order'];
+    }
+
+//Column sort order
+$sortBy = array('asc', 'desc'); $sort = 'desc';
+if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {                                                                    
+      if($_GET['sort']=='asc') {                                                                                                                            
+        $sort='desc';
+        }                                                                                   
+else {
+    $sort='asc';
+    }                                                                                                                           
+}
+
+// Attempt select query execution
+$sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
+$count_pages = "{INDEX_QUERY}";
+
+
+if(!empty($_GET['search'])) {
+    $search = ($_GET['search']);
+    $sql = "SELECT * FROM {TABLE_NAME}
+        WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
+        LIKE '%$search%'
+        ORDER BY $order $sort 
+        LIMIT $offset, $no_of_records_per_page";
+    $count_pages = "SELECT * FROM {TABLE_NAME}
+        WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
+        LIKE '%$search%'
+        ORDER BY $order $sort";
+}
+else {
+    $search = "";
+}
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <?php
+    if($result = mysqli_query($link, $sql)){
+
+        $rows = array();
+            while($r = mysqli_fetch_assoc($result)) {
+            $rows['{TABLE_NAME}'][] = $r;
+            }
+        print json_encode($rows);
+
+        // Free result set
+        mysqli_free_result($result);
+    }
+
+    // Close connection
+    mysqli_close($link);
+    ?>
+</body>
+</html>
+EOT;
+
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 $indexfile = <<<'EOT'
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +118,7 @@ $indexfile = <<<'EOT'
             margin-right: 5px;
         }
         body {
-            font-size: 14px; 
+            font-size: 14px;
         }
     </style>
 </head>
@@ -25,11 +127,12 @@ $indexfile = <<<'EOT'
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
+                    <a href="index.php" class="btn btn-secondary float-left mr-4"><i class='far fa-arrow-alt-circle-left'></i> Back</a>
                     <div class="page-header clearfix">
-                        <h2 class="float-left">{TABLE_DISPLAY} Details</h2>
-                        <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
-                        <a href="index.php" class="btn btn-secondary float-right mr-2">Back</a>
+                        <h2 class="btn-toolbar">{TABLE_DISPLAY} Details</h2>
+                        <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right"><i class='far fa-file'></i> Add New Record</a>
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-warning float-right mr-2"><i class='far fa-share-square'></i> Reset View</a>
+                        <a href="../api/{TABLE_NAME}-api.php" target="_blank" class="btn btn-primary float-right mr-2"><i class='far fa-file-code'></i> API-Endpoint</a>
                     </div>
 
                     <div class="form-row">
@@ -181,6 +284,8 @@ $indexfile = <<<'EOT'
 </html>
 EOT;
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 $readfile = <<<'EOT'
 <?php
@@ -347,6 +452,8 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 </html>
 
 EOT;
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 $createfile = <<<'EOT'
 <?php
@@ -420,6 +527,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 </html>
 EOT;
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 $updatefile = <<<'EOT'
 <?php
@@ -548,6 +657,10 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
 EOT;
 
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 $errorfile = <<<'EOT'
 <!DOCTYPE html>
 <html lang="en">
@@ -577,6 +690,9 @@ $errorfile = <<<'EOT'
 </body>
 </html>
 EOT;
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 $startfile = <<<'EOT'
 

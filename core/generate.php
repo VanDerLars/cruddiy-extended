@@ -73,10 +73,27 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
     $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
-    $destination_file = fopen("app/".$tablename."-index.php", "w") or die("Unable to open file!");
+    $destination_file = fopen("app/".$tablename."-index.php", "w") or die("Unable to open file index.php!");
     fwrite($destination_file, $step8);
     fclose($destination_file);
     echo "Generating $tablename Index file(s)<br>";
+}
+function generate_index_api($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
+    global $indexapi;
+    $columns_available = implode("', '", $columns_available);
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $indexapi);
+    $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
+    $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM $tablename", $step1 );
+    $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
+    $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
+    $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
+    $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
+    $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
+    $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
+    $destination_file = fopen("api/".$tablename."-api.php", "w") or die("Unable to open file index.php!");
+    fwrite($destination_file, $step8);
+    fclose($destination_file);
+    echo "Generating $tablename API file(s)<br>";
 }
 
 function generate_read($tablename, $column_id, $read_records){
@@ -84,7 +101,7 @@ function generate_read($tablename, $column_id, $read_records){
     $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
-    $destination_file = fopen("app/".$tablename."-read.php", "w") or die("Unable to open file!");
+    $destination_file = fopen("app/".$tablename."-read.php", "w") or die("Unable to open file read.php!");
     fwrite($destination_file, $step2);
     fclose($destination_file);
     echo "Generating $tablename Read file(s)<br>";
@@ -94,7 +111,7 @@ function generate_delete($tablename, $column_id){
     global $deletefile;
     $step0 = str_replace("{TABLE_NAME}", $tablename, $deletefile);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
-    $destination_file = fopen("app/".$tablename."-delete.php", "w") or die("Unable to open file!");
+    $destination_file = fopen("app/".$tablename."-delete.php", "w") or die("Unable to open file delete.php!");
     fwrite($destination_file, $step1);
     fclose($destination_file);
     echo "Generating $tablename Delete file(s)<br><br>";
@@ -110,7 +127,7 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
     $step5 = str_replace("{CREATE_SQL_PARAMS}", $create_sql_params, $step4 );
     $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
-    $destination_file = fopen("app/".$tablename."-create.php", "w") or die("Unable to open file!");
+    $destination_file = fopen("app/".$tablename."-create.php", "w") or die("Unable to open file create.php!");
     fwrite($destination_file, $step7);
     fclose($destination_file);
     echo "Generating $tablename Create file(s)<br>";
@@ -128,7 +145,7 @@ function generate_update($tablename, $create_records, $create_err_records, $crea
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
     $step8 = str_replace("{UPDATE_COLUMN_ROWS}", $update_column_rows, $step7);
     $step9 = str_replace("{UPDATE_SQL_COLUMNS}", $update_sql_columns, $step8);
-    $destination_file = fopen("app/".$tablename."-update.php", "w") or die("Unable to open file!");
+    $destination_file = fopen("app/".$tablename."-update.php", "w") or die("Unable to open file update.php!");
     fwrite($destination_file, $step9);
     fclose($destination_file);
     echo "Generating $tablename Update file(s)<br>";
@@ -431,6 +448,9 @@ foreach ($_POST as $key => $value) {
                 generate_read($tablename,$column_id,$read_records);
                 generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                 generate_delete($tablename,$column_id);
+
+
+                generate_index_api($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
             }
         }
 
