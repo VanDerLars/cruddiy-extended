@@ -16,7 +16,7 @@ $indexfile = <<<'EOT'
             margin-right: 5px;
         }
         body {
-            font-size: 14px;
+            font-size: 14px; 
         }
     </style>
 </head>
