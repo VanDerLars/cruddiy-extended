@@ -243,6 +243,9 @@ foreach ($_POST as $key => $value) {
         //DETAIL CREATE UPDATE AND DELETE pages variables
         foreach ( $_POST[$key] as $columns ) {
             //print_r($columns);
+            $create_numberofparams = array_fill(0, $total_params, '?');
+            $create_numberofparams = implode(",", $create_numberofparams);
+
             if ($j < $total_columns) {
 
                 if (isset($columns['columndisplay'])){
@@ -414,14 +417,22 @@ foreach ($_POST as $key => $value) {
                     case 6:
                         $create_html [] = '';
 
-                        echo('<br>remove timespamp-column: -' . $columnname . '-<br>');
+                        echo('remove timespamp-column: -' . $columnname . '- <br>');
+                        $create_sqlcolumns = array_diff($create_sqlcolumns, array('`'.$columnname.'`'));
+                        $update_sql_columns = array_diff($update_sql_columns, array('`'.$columnname.'`'));
+                        $update_sql_params = array_diff($update_sql_params, array("`$columnname`".'=?'));
+                        $create_sql_params = array_diff($create_sql_params, array("$$columnname"));
+
+
+                        $create_numberofparams = array_fill(0, count($update_sql_params), '?');
+                        $create_numberofparams = implode(",", $create_numberofparams);
+                        replace_first(",?","",$create_numberofparams);
+
                         $repl_str1 = '$'.$columnname.' = "";';
                         $repl_str2 = '$'.$columnname.' = trim($_POST["'.$columnname.'"]);';
 
                         $create_records = str_replace($repl_str1, '', $create_records);
                         $create_postvars = str_replace($repl_str2, '', $create_postvars);
-
-
 
                     break;
 
@@ -444,8 +455,6 @@ foreach ($_POST as $key => $value) {
                 $update_sql_columns = implode(",", $update_sql_columns);
 
                 $index_sql_search = implode(",", $columns_available);
-                $create_numberofparams = array_fill(0, $total_params, '?');
-                $create_numberofparams = implode(",", $create_numberofparams);
                 $create_sqlcolumns = implode(",", $create_sqlcolumns);
                 $create_sql_params = implode(",", $create_sql_params);
                 $create_html = implode("\n\t\t\t\t\t\t", $create_html);
@@ -477,8 +486,19 @@ foreach ($_POST as $key => $value) {
     }
 
 }
+
+
+function replace_first($find, $replace, $subject) {
+    // stolen from the comments at PHP.net/str_replace
+    // Splits $subject into an array of 2 items by $find,
+    // and then joins the array with $replace
+    return implode($replace, explode($find, $subject, 2));
+}
+
 ?>
 <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
 <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app.<br>
 If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>
+
+

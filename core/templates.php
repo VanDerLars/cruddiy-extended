@@ -110,6 +110,8 @@ $indexfile = <<<'EOT'
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/6b773fe9e4.js" crossorigin="anonymous"></script>
+    <link href="//cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.css" type="text/css" rel="stylesheet" />
+
     <style type="text/css">
         .page-header h2{
             margin-top: 0;
@@ -119,6 +121,20 @@ $indexfile = <<<'EOT'
         }
         body {
             font-size: 14px;
+        }
+        .featherlight-content iframe {
+            width: 100%;
+            height: 100%;
+        }
+        .featherlight-content {
+            width: 60%;
+            max-width: 960px;
+            min-width: 480px;
+            height: 80%;
+            border-radius: 10px;
+        }
+        form {
+            margin: 50px;
         }
     </style>
 </head>
@@ -130,7 +146,7 @@ $indexfile = <<<'EOT'
                     <a href="index.php" class="btn btn-secondary float-left mr-4"><i class='far fa-arrow-alt-circle-left'></i> Back</a>
                     <div class="page-header clearfix">
                         <h2 class="btn-toolbar">{TABLE_DISPLAY} Details</h2>
-                        <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right"><i class='far fa-file'></i> Add New Record</a>
+                        <a href="#" data-featherlight="{TABLE_NAME}-create.php" class="btn btn-success float-right"><i class='far fa-file'></i> Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-warning float-right mr-2"><i class='far fa-share-square'></i> Reset View</a>
                         <a href="../api/{TABLE_NAME}" target="_blank" class="btn btn-primary float-right mr-2"><i class='far fa-file-code'></i> API-Endpoint</a>
                     </div>
@@ -231,9 +247,9 @@ $indexfile = <<<'EOT'
                                     echo "<tr>";
                                     {INDEX_TABLE_ROWS}
                                         echo "<td>";
-                                            echo "<a href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='View Record' data-toggle='tooltip'><i class='far fa-eye'></i></a>";
-                                            echo "<a href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Update Record' data-toggle='tooltip'><i class='far fa-edit'></i></a>";
-                                            echo "<a href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Delete Record' data-toggle='tooltip'><i class='far fa-trash-alt'></i></a>";
+                                            echo "<a href='' data-featherlight='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='View Record' data-toggle='tooltip'><i class='far fa-eye'></i></a>";
+                                            echo "<a href='' data-featherlight='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Update Record' data-toggle='tooltip'><i class='far fa-edit'></i></a>";
+                                            echo "<a href='' data-featherlight='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Delete Record' data-toggle='tooltip'><i class='far fa-trash-alt'></i></a>";
                                         echo "</td>";
                                     echo "</tr>";
                                 }
@@ -275,6 +291,7 @@ $indexfile = <<<'EOT'
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/featherlight@1.7.14/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
@@ -345,12 +362,15 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     <meta charset="UTF-8">
     <title>View Record</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        form {margin: 50px;}
+    </style>
 </head>
 <body>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-8 mx-auto">
+                <div class="col-md-12 mx-auto">
                     <div class="page-header">
                         <h1>View Record</h1>
                     </div>
@@ -422,12 +442,15 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
     <meta charset="UTF-8">
     <title>View Record</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        form {margin: 50px;}
+    </style>
 </head>
 <body>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-6 mx-auto">
+                <div class="col-md-12 mx-auto">
                     <div class="page-header">
                         <h1>Delete Record</h1>
                     </div>
@@ -499,12 +522,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <meta charset="UTF-8">
     <title>Create Record</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        form {margin: 50px;}
+    </style>
 </head>
 <body>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-6 mx-auto">
+                <div class="col-md-12 mx-auto">
                     <div class="page-header">
                         <h2>Create Record</h2>
                     </div>
@@ -567,7 +593,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                 header("location: error.php");
             } else{
                 $stmt = null;
-                header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
+                header("location: {TABLE_NAME}-index.php");
             }
 } else {
     // Check existence of id parameter before processing further
@@ -630,12 +656,15 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     <meta charset="UTF-8">
     <title>Update Record</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <style>
+        form {margin: 50px;}
+    </style>
 </head>
 <body>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-6 mx-auto">
+                <div class="col-md-12 mx-auto">
                     <div class="page-header">
                         <h2>Update Record</h2>
                     </div>
@@ -707,6 +736,9 @@ $startfile = <<<'EOT'
         }
         table tr td:last-child a{
             margin-right: 5px;
+        }
+        form {
+            margin: 50px;
         }
     </style>
 </head>
