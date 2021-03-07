@@ -90,7 +90,10 @@ function generate_index_api($tablename,$tabledisplay,$index_table_headers,$index
     $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
     $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
-    $destination_file = fopen("api/".$tablename."-api.php", "w") or die("Unable to open file index.php!");
+    if (!file_exists('api/'.$tablename)) {
+        mkdir('api/'.$tablename, 0755, true);
+    }
+    $destination_file = fopen("api/".$tablename."/index.php", "w") or die("Unable to open file index.php!");
     fwrite($destination_file, $step8);
     fclose($destination_file);
     echo "Generating $tablename API file(s)<br>";
@@ -279,11 +282,11 @@ foreach ($_POST as $key => $value) {
                     $create_record = "\$$columnname";
                     $create_err_records .= "\$$columnname".'_err'." = \"\";\n";
                     $create_err_record = "\$$columnname".'_err';
-                    $create_sqlcolumns [] = $columnname;
+                    $create_sqlcolumns [] = "`$columnname`";
                     $create_sql_params [] = "\$$columnname";
                     $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
 
-                    $update_sql_params [] = "$columnname".'=?';
+                    $update_sql_params [] = "`$columnname`".'=?';
                     $update_sql_id = "$column_id".'=?';
                     $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
 
