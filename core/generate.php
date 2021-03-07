@@ -38,6 +38,9 @@ function column_type($columnname){
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
         break;
+        case (preg_match("/timestamp/i", $columnname) ? true : false) :
+            return 6;
+        break;
         default:
             return 0;
         break;
@@ -406,6 +409,20 @@ foreach ($_POST as $key => $value) {
                             <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
+                    break;
+                    //TIMESTAMP
+                    case 6:
+                        $create_html [] = '';
+
+                        echo('<br>remove timespamp-column: -' . $columnname . '-<br>');
+                        $repl_str1 = '$'.$columnname.' = "";';
+                        $repl_str2 = '$'.$columnname.' = trim($_POST["'.$columnname.'"]);';
+
+                        $create_records = str_replace($repl_str1, '', $create_records);
+                        $create_postvars = str_replace($repl_str2, '', $create_postvars);
+
+
+
                     break;
 
                     default:

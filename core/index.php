@@ -24,6 +24,10 @@
             $('input').bind('input', function() {
                 getConfiguration();
             });
+            $('#configuration').bind('blur', function() {
+                let conf = $('#configuration').val();
+                setConfiguration(JSON.parse(conf));
+            });
         });
 
         function getConfiguration(){
@@ -56,6 +60,7 @@
             $("#url_text").val(window.location.hostname + window.location.pathname + "?" + urlParams);
         }
         function setConfiguration(obj){
+            console.log(obj);
             var decrPw = CryptoJS.AES.decrypt(obj.password, '51mple_encrypt10n_5ecret_n0t_very_5ecure_but_better_than_n0th1ng');
             var pwDecrypt = decrPw.toString(CryptoJS.enc.Utf8);
 

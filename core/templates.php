@@ -5,7 +5,7 @@ $indexapi = <<<'EOT'
 // PARAMETER
 
 // Include config file
-require_once "config.php";
+require_once "../../app/config.php";
 
 //Get current URL and parameters for correct pagination
 $protocol = $_SERVER['SERVER_PROTOCOL'];
@@ -132,7 +132,7 @@ $indexfile = <<<'EOT'
                         <h2 class="btn-toolbar">{TABLE_DISPLAY} Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right"><i class='far fa-file'></i> Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-warning float-right mr-2"><i class='far fa-share-square'></i> Reset View</a>
-                        <a href="../api/{TABLE_NAME}-api.php" target="_blank" class="btn btn-primary float-right mr-2"><i class='far fa-file-code'></i> API-Endpoint</a>
+                        <a href="../api/{TABLE_NAME}" target="_blank" class="btn btn-primary float-right mr-2"><i class='far fa-file-code'></i> API-Endpoint</a>
                     </div>
 
                     <div class="form-row">
