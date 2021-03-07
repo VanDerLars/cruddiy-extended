@@ -5,6 +5,78 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+
+    <script>
+        $('document').ready(function(){
+
+            $('input').bind('input', function() {
+                getConfig();
+            });
+
+            $('#configuration').bind('blur', function() {
+                let conf = $('#configuration').val();
+                setConfiguration(JSON.parse(conf));
+            });
+        });
+
+        function setConfiguration(obj){
+            console.log(obj);
+            obj.forEach(function(item){
+
+                var input = $("[name='" + item.name + "']");
+                console.log(input);
+
+                if ($(input).prop('type') == 'checkbox'){
+                    $(input).prop('checked', item.value);
+                }else{
+                    $(input).val(item.value); 
+                }
+
+            })
+        }
+
+        function getConfig(){
+            var inputs = $('input');
+            var validInputs = [];
+            inputs.each(function(index){
+                if (this.id.length > 1 ){
+                    validInputs.push(this);
+                }else{
+                    //nothing
+                }
+            });
+            let obj = [];
+
+            validInputs.forEach(function(item){
+                var name = item.name;
+                var val = "";
+                if ($(item).prop('type') == 'checkbox'){
+                    val = $(item).prop('checked');
+                    console.log(val);
+                }else{
+                    val = $(item).val(); 
+                }
+                
+            
+                var itm = {
+                "name" : name,
+                "value" : val
+                };
+                obj.push(itm);
+            });
+            console.log(obj);
+
+            var blkstr = $.map(obj, function(val,index) {                    
+                var str = JSON.stringify(val);
+                return str;
+            }).join(", ");  
+            $('#configuration').val("[" + blkstr + "]");
+        }
+    </script>
 </head>
 <body>
 <section class="py-5">
@@ -127,7 +199,7 @@
                                         <input id="textinput_'.$tablename. '"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control">
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-0" value="1">
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-0" value="1" checked="True">
                                 Visible in overview?</div>
                      </div>';
                                         $i++;
@@ -145,12 +217,17 @@
                         </div>
                     </fieldset>
                 </form>
+                <hr>
+                <div class="text-center pt-5">
+                    <h4>Save and Load Configuration</h4>
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label" for="configuration">Copy and paste the config here:</label>
+                        <textarea id="configuration" name="configuration" class="form-control input-md"></textarea>
+                </div>
             </div>
         </div>
     </div>
 </section>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
 </html>
