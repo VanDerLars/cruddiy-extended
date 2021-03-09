@@ -7,7 +7,17 @@
 <?php
 
 require "app/config.php";
-require "templates.php";
+require "templates/template_create.php";
+require "templates/template_delete.php";
+require "templates/template_error.php";
+require "templates/template_index_api.php";
+require "templates/template_index.php";
+require "templates/template_read.php";
+require "templates/template_start.php";
+require "templates/template_update.php";
+
+
+
 $tablename = '';
 $tabledisplay = '';
 $columnname = '' ;
