@@ -17,85 +17,42 @@ $protocol=strpos(strtolower($_SERVER['SERVER_PROTOCOL']),'https')
 $currenturl = $protocol . '://' . $domain. $script . '?' . $parameters;
 
 
-//Pagination
-if (isset($_GET['pageno'])) {
-    $pageno = $_GET['pageno'];
-} else {
-    $pageno = 1;
-}
-//$no_of_records_per_page is set on the index page. Default is 10.
-$offset = ($pageno-1) * $no_of_records_per_page;
 
-$total_pages_sql = "SELECT COUNT(*) FROM {TABLE_NAME}";
-$result = mysqli_query($link,$total_pages_sql);
-$total_rows = mysqli_fetch_array($result)[0];
-$total_pages = ceil($total_rows / $no_of_records_per_page);
+$search = array();
+$valid  = array('{COLUMNS}');
 
-//Column sorting on column name
-$orderBy = array('{COLUMNS}'); 
-$order = '{COLUMN_ID}';
-if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
-        $order = $_GET['order'];
-    }
-
-//Column sort order
-$sortBy = array('asc', 'desc'); $sort = 'desc';
-if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {                                                                    
-      if($_GET['sort']=='asc') {                                                                                                                            
-        $sort='desc';
-        }                                                                                   
-else {
-    $sort='asc';
-    }                                                                                                                           
+$cols = array_intersect( $valid, array_keys( $_GET ) );
+foreach( $cols as $col )
+{
+    $search[] = $col . ' = ' . mysqli_real_escape_string($link, $_GET[ $col ] );
 }
 
-// Attempt select query execution
-$sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
-$count_pages = "{INDEX_QUERY}";
-
-
-if(!empty($_GET['search'])) {
-    $search = ($_GET['search']);
-    $sql = "SELECT * FROM {TABLE_NAME}
-        WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
-        LIKE '%$search%'
-        ORDER BY $order $sort 
-        LIMIT $offset, $no_of_records_per_page";
-    $count_pages = "SELECT * FROM {TABLE_NAME}
-        WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
-        LIKE '%$search%'
-        ORDER BY $order $sort";
-}
-else {
-    $search = "";
+if (count($search) > 0){
+    $sql = 'SELECT * FROM `{TABLE_NAME}` WHERE ' . implode( ' AND ', $search );
+}else{
+    $sql = 'SELECT * FROM `{TABLE_NAME}`';
 }
 
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
-<body>
-    <?php
+    header("Access-Control-Allow-Origin: *");
+
     if($result = mysqli_query($link, $sql)){
 
         $rows = array();
             while($r = mysqli_fetch_assoc($result)) {
-            $rows['{TABLE_NAME}'][] = $r;
+                $rows['{TABLE_NAME}'][] = $r;
             }
-        print json_encode($rows);
+        print json_encode($rows['{TABLE_NAME}']);
 
         // Free result set
         mysqli_free_result($result);
+
+    }else{
+            print 'ERROR';
     }
 
     // Close connection
     mysqli_close($link);
     ?>
-</body>
-</html>
 EOT;
 
 

@@ -83,6 +83,7 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
 }
 function generate_index_api($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
     global $indexapi;
+
     $columns_available = implode("', '", $columns_available);
     $step0 = str_replace("{TABLE_NAME}", $tablename, $indexapi);
     $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
