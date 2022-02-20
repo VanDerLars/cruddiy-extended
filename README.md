@@ -12,7 +12,7 @@ With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap C
 
 ## The differences between Cruddiy and Cruddiy-extended
 
-The original Cruddiy is a smart peace of software to generate little management web apps based on your database. It lacks some features though, thats why I forked it and extended it a bit.
+The original Cruddiy is a smart piece of software to generate little management web apps based on your database. It lacks some features though, thats why I forked it and extended it a bit.
 
 What is different:
 * You have an GET, POST, PUT, DELETE endpoint for each database table
